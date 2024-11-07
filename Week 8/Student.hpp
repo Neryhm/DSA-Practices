@@ -5,13 +5,13 @@ struct Date{
 };
 
 struct Student{
-    char id[8];
+    char id[9];
     char name[50];
     int sex;
     Date date;
     char address[100];
-    char major[12];
-    char enrollYear[7];
+    char major[17];
+    char gen[7];
 };
 
 struct Node{

@@ -4,6 +4,8 @@
 #include <sstream>
 #include <vector>
 
+using namespace std;
+
 struct Node {
     string word;
     Node* next;

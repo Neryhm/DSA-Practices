@@ -72,4 +72,43 @@ public:
         delete node;
         temp->next = next;
     }
+
+    Node* getHead() {
+        return head;
+    }
+
+    void printList() const {
+        Node* current = head;
+        while (current) {
+            std::cout << current->data << " ";
+            current = current->next;
+        }
+        std::cout << std::endl;
+    }
 };
+
+int main() {
+    LinkedList list;
+    list.push_back(1);
+    list.push_back(2);
+    list.push_back(3);
+    list.push_back(4);
+    list.push_back(5);
+    list.printList();
+
+    list.deleteHead(); std:: cout << "Delete Head: ";
+    list.printList();
+
+    list.deleteTail(); std:: cout << "Delete Tail: ";
+    list.printList();
+
+    Node* node = list.getHead();
+    while (node->next) {
+        node = node->next;
+    }
+    list.deleteNode(node); std:: cout << "Delete Node After Second Node: ";
+    list.printList();
+
+    return 0;
+}
+

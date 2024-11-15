@@ -1,16 +1,16 @@
 #include <iostream>
 
 struct Log {
-    std::string type;
     int size;
     int age;
 };
 
 struct Stack {
+    std::string type;
     Log* data;
     int top;
     int capacity;
-    Stack(int capacity) : capacity(capacity) {
+    Stack(std::string type, int capacity) : type(type), capacity(capacity) {
         data = new Log[capacity];
         top = -1;
     }
@@ -37,33 +37,36 @@ struct Stack {
         }
         return data[top--];
     }
-    void countByAge() {
+    void countByAge() const {
         int ages[100] = {0};
         for (int i = 0; i <= top; ++i) {
             ++ages[data[i].age];
         }
+        std::cout << type << ": \n";
         for (int i = 0; i < 100; ++i) {
             if (ages[i] > 0) {
-                std::cout << i << " years: " << ages[i] << " logs" << std::endl;
+                std::cout << i << " years: " << ages[i] << std::endl;
             }
         }
+        std::cout << std::endl;
     }
 };
 
 int main() {
-    Stack stack(10);
-    stack.push({"Oak", 10, 7});
-    stack.push({"Spruce", 40, 12});
-    stack.push({"Birch", 20, 5});
-    stack.push({"Acacia", 70, 9});
-    stack.push({"Cedar", 50, 5});
-    stack.push({"Ebony", 50, 5});
-    stack.push({"Birch", 50, 12});
-    stack.push({"Rosewood", 50, 3});
+    Stack oakStack("Oak", 10);
+    oakStack.push({10, 7});
+    oakStack.push({20, 12});
+    oakStack.push({30, 5});
 
-    stack.countByAge();
+    Stack spruceStack("Spruce", 10);
+    spruceStack.push({40, 12});
+    spruceStack.push({37, 5});
+    spruceStack.push({14, 7});
+    spruceStack.push({25, 7});
+    spruceStack.push({56, 5});
+
+    oakStack.countByAge();
+    spruceStack.countByAge();
 
     return 0;
 }
-
-

@@ -1,6 +1,7 @@
 #include <iostream>
 
 struct Node {
+    //không biết phải dùng char để biểu diễn 0.5 như thế nào nên e dùng string
     std::string value;
     Node* left;
     Node* right;
@@ -15,8 +16,7 @@ int precedence(char op) {
     return 0;
 }
 
-Node* buildExpressionTree(std::string expr) {
-    // Remove spaces from expression
+Node* buildTree(std::string expr) {
     std::string newExpr;
     for (char c : expr) {
         if (c != ' ') {
@@ -24,14 +24,14 @@ Node* buildExpressionTree(std::string expr) {
         }
     }
     expr = newExpr;
-    // Stacks for operators and operands
+    // Dùng Stack
     Node* operandStack[100];
     char operatorStack[100];
     int operandTop = -1;
     int operatorTop = -1;
 
     for (int i = 0; i < expr.length(); i++) {
-        // If digit or decimal point, parse the full number
+        // số thập phân thì lấy full
         if ((expr[i] >= '0' && expr[i] <= '9') || expr[i] == '.') {
             std::string number;
             bool hasDecimal = false;
@@ -39,17 +39,16 @@ Node* buildExpressionTree(std::string expr) {
             while (i < expr.length() && 
                    ((expr[i] >= '0' && expr[i] <= '9') || expr[i] == '.')) {
                 if (expr[i] == '.') {
-                    if (hasDecimal) break; // Second decimal point is invalid
+                    if (hasDecimal) break;
                     hasDecimal = true;
                 }
                 number += expr[i];
                 i++;
             }
-            i--; // Compensate for extra increment
+            i--;
             
             operandStack[++operandTop] = new Node(number);
         }
-        // If operand (letter), push to operand stack
         else if ((expr[i] >= 'a' && expr[i] <= 'z')) {
             std::string operand;
             while (i < expr.length() && 
@@ -57,15 +56,13 @@ Node* buildExpressionTree(std::string expr) {
                 operand += expr[i];
                 i++;
             }
-            i--; // Compensate for extra increment
+            i--;
             
             operandStack[++operandTop] = new Node(operand);
         }
-        // If opening parenthesis, push to operator stack
         else if (expr[i] == '(') {
             operatorStack[++operatorTop] = expr[i];
         }
-        // If closing parenthesis, process until opening parenthesis
         else if (expr[i] == ')') {
             while (operatorTop >= 0 && operatorStack[operatorTop] != '(') {
                 char op = operatorStack[operatorTop--];
@@ -79,14 +76,11 @@ Node* buildExpressionTree(std::string expr) {
                 
                 operandStack[++operandTop] = newNode;
             }
-            // Remove opening parenthesis
             if (operatorTop >= 0 && operatorStack[operatorTop] == '(')
                 operatorTop--;
         }
-        // If operator
         else if (expr[i] == '+' || expr[i] == '-' || 
                  expr[i] == '*' || expr[i] == '/' || expr[i] == '^') {
-            // Process operators with higher or equal precedence
             while (operatorTop >= 0 && 
                    operatorStack[operatorTop] != '(' && 
                    precedence(operatorStack[operatorTop]) >= precedence(expr[i])) {
@@ -102,12 +96,10 @@ Node* buildExpressionTree(std::string expr) {
                 operandStack[++operandTop] = newNode;
             }
             
-            // Push current operator
             operatorStack[++operatorTop] = expr[i];
         }
     }
     
-    // Process remaining operators
     while (operatorTop >= 0) {
         char op = operatorStack[operatorTop--];
         
@@ -121,7 +113,7 @@ Node* buildExpressionTree(std::string expr) {
         operandStack[++operandTop] = newNode;
     }
     
-    return operandStack[0]; // Root of the expression tree
+    return operandStack[0];
 }
 
 void preOrder(Node* root) {
@@ -159,7 +151,7 @@ void deleteTree(Node* root) {
 int main() {
     std::string expression = "a + 5 * b / c - c ^ 8 + d * e ^ 0.5";
     
-    Node* root = buildExpressionTree(expression);
+    Node* root = buildTree(expression);
     
     std::cout << "PreOrder : ";
     preOrder(root);

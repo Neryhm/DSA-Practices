@@ -1,5 +1,22 @@
 #include <iostream>
 
+bool compareStrings(const char* str1, const char* str2) {
+    // Iterate through both strings
+    for (int i = 0; i < 100; ++i) {
+        // If both chars are null, we've reached the end and strings match
+        if (str1[i] == '\0' && str2[i] == '\0') {
+            return true;
+        }
+        
+        // If chars differ, strings don't match
+        if (str1[i] != str2[i]) {
+            return false;
+        }
+    }
+    
+    // Should never reach here, but return false as safeguard
+    return false;
+}
 class ContentNode {
 public:
     char title[100];  // Fixed-size array for title
@@ -74,6 +91,57 @@ public:
             children[i]->print(depth + 1);
         }
     }
+
+    // Recursive method to count chapters (direct children of root)
+    int countChapters() const {
+        return childCount;
+    }
+
+    // Recursive method to find the longest chapter
+    ContentNode* findLongestChapter() {
+        ContentNode* longestChapter = nullptr;
+        int maxPages = 0;
+
+        for (int i = 0; i < childCount; ++i) {
+            if (children[i]->numPages > maxPages) {
+                maxPages = children[i]->numPages;
+                longestChapter = children[i];
+            }
+        }
+
+        return longestChapter;
+    }
+
+    // Recursive method to search and delete a node by title
+    bool deleteNodeByTitle(const char* searchTitle) {
+        for (int i = 0; i < childCount; ++i) {
+            // If child matches title, remove and shift
+            if (compareStrings(children[i]->title, searchTitle)) {
+                // Delete the found node
+                delete children[i];
+                
+                // Shift remaining children
+                for (int j = i; j < childCount - 1; ++j) {
+                    children[j] = children[j+1];
+                }
+                
+                // Reduce child count
+                childCount--;
+                
+                // Recalculate page count
+                updatePageCount();
+                
+                return true;
+            }
+
+            // Recursively search in children
+            if (children[i]->deleteNodeByTitle(searchTitle)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 };
 
 class BookContents {
@@ -106,6 +174,24 @@ public:
         std::cout << "Table of Contents:" << std::endl;
         root->print();
     }
+
+    // Wrapper methods for new functionality
+    int getChapterCount() {
+        return root->countChapters();
+    }
+
+    void findAndPrintLongestChapter() {
+        ContentNode* longestChapter = root->findLongestChapter();
+        if (longestChapter) {
+            std::cout << "Longest Chapter: " 
+                      << longestChapter->title 
+                      << " (Pages: " << longestChapter->numPages << ")" << std::endl;
+        }
+    }
+
+    bool deleteChapter(const char* chapterTitle) {
+        return root->deleteNodeByTitle(chapterTitle);
+    }
 };
 
 int main() {
@@ -122,11 +208,11 @@ int main() {
 
     // Create subsections with page estimates
     ContentNode* subsection1_1_1 = new ContentNode("Memory Management", 10);
-    // ContentNode* subsection1_1_2 = new ContentNode("Algorithm Complexity", 15);
+    ContentNode* subsection1_1_2 = new ContentNode("Algorithm Complexity", 15);
 
     // Build hierarchy
     section1_1->addChild(subsection1_1_1);
-    // section1_1->addChild(subsection1_1_2);
+    section1_1->addChild(subsection1_1_2);
     
     chapter1->addChild(section1_1);
     chapter1->addChild(section1_2);
@@ -134,6 +220,25 @@ int main() {
     book.getRoot()->addChild(chapter1);
     book.getRoot()->addChild(chapter2);
 
+    // Print initial table of contents
+    std::cout << "Initial Table of Contents:" << std::endl;
+    book.printTableOfContents();
+
+    // Demonstrate new functionality
+    std::cout << "\nNumber of Chapters: " << book.getChapterCount() << std::endl;
+    
+    book.findAndPrintLongestChapter();
+
+    // Attempt to delete a chapter
+    std::cout << "\nDeleting 'Memory Management' subsection:" << std::endl;
+    if (book.deleteChapter("Memory Management")) {
+        std::cout << "Chapter deleted successfully." << std::endl;
+    } else {
+        std::cout << "Chapter not found." << std::endl;
+    }
+
+    // Print updated table of contents
+    std::cout << "\nUpdated Table of Contents:" << std::endl;
     book.printTableOfContents();
 
     return 0;

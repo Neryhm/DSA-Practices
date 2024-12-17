@@ -1,3 +1,11 @@
+/*
+    A chapter/section is created and its pages number is predefined.
+    When a child node is created with its pages number, the parent
+    node's pages number is updated by summed up all the child nodes'
+    pages number.
+    That means the parent nodes' pages number can be modified if its
+    child nodes' total pages number is not the same.
+*/
 #include <iostream>
 
 bool compareStrings(const char* str1, const char* str2) {

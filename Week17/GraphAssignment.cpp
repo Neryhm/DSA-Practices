@@ -141,6 +141,7 @@ int main() {
     std::cout << "\nEdge from A to B? " << (g.isEdge(A, B) ? "Yes" : "No") << "\n";
     std::cout << "Edge from B to A? " << (g.isEdge(B, A) ? "Yes" : "No") << "\n";
 
+    // BFS and DFS
     g.bfs(A);
     g.dfs(A);
 
